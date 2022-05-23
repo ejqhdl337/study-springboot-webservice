@@ -3,13 +3,16 @@ package com.juicy.study.springboot.service;
 
 import com.juicy.study.springboot.web.domain.posts.Posts;
 import com.juicy.study.springboot.web.domain.posts.PostsRepository;
+import com.juicy.study.springboot.web.dto.PostsListResponseDto;
 import com.juicy.study.springboot.web.dto.PostsResponseDto;
 import com.juicy.study.springboot.web.dto.PostsSaveRequestDto;
 import com.juicy.study.springboot.web.dto.PostsUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -39,10 +42,15 @@ public class PostsService {
     }
 
     @Transactional
-    public void delete(Long id){
+    public void deletePost(Long id){
         Posts entity = postsRepository.findById(id)
                 .orElseThrow(()->new IllegalArgumentException("해당 게시글이 없습니다. id =" + id));
 
         postsRepository.delete(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostsListResponseDto> findAllDesc(){
+        return postsRepository.findAllDesc().stream().map(PostsListResponseDto::new).collect(Collectors.toList());
     }
 }
